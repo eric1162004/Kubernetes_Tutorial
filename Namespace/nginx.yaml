@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  namespace: prod # deploy in namespace prod
+  labels:
+    app: nginx
+  name: nginx
+spec:
+  containers:
+  - image: nginx
+    name: nginx
+    ports:
+    - containerPort: 80
