@@ -2,13 +2,16 @@ apiVersion: v1
 kind: Pod
 metadata:
   labels:
-    run: nginx
-  name: nginx-demo-pod
+    app: nginx
+    env: test
+    user: nginx
+  annotations:
+    scrape: "true"
+  name: nginx
 spec:
   containers:
   - image: nginx
     name: nginx
     ports:
     - containerPort: 80
-    - containerPort: 90
   restartPolicy: Always
