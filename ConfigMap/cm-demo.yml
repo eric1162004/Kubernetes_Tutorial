@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cm-demo
+data:
+  BACKGROUND_COLOR: black
+  TEXT_COLOR: blue
+  test.conf: "BACKGROUND_COLOR=blue\r\nTEXT_COLOR=white"
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cm-demo
+  labels:
+    app: flask
+spec:
+  containers:
+  - image: kunchalavikram/flask-env:latest
+    name: cm-demo
+    ports:
+    - containerPort: 5000
+    # env: # apply key/value individually
+    # - name: BACKGROUND_COLOR
+    #   # value: "blue"
+    #   valueFrom:
+    #     configMapKeyRef:
+    #       name: cm-demo
+    #       key: BACKGROUND_COLOR
+    # - name: TEXT_COLOR
+    #   # value: "white"
+    #   valueFrom:
+    #     configMapKeyRef:
+    #       name: cm-demo
+    #       key: TEXT_COLOR
+    envFrom: # apply all key/values from the cm
+    - configMapRef:
+        name: cm-demo
+    volumeMounts:
+    - name: cm-volume
+      mountPath: /etc/app/colors.conf
+  volumes:
+    - name: cm-volume 
+      configMap: # config map as volume
+        name: cm-demo
+        items:
+        - key: test.conf
+          path: colors.conf
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: flask
+spec:
+  ports:
+  - name: http
+    port: 80
+    targetPort: 5000
+    nodePort: 31000
+  selector:
+    app: flask
+  type: NodePort
