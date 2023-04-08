@@ -1,0 +1,16 @@
+# initcontainer run their task and terminate. The main container start afterward
+apiVersion: v1
+kind: Pod
+metadata:
+  name: init-demo-1
+spec:
+  initContainers:
+  - name: sleeper
+    image: alpine
+    command: ['sleep', '10'] # delay start
+  containers:
+  - name: nginx
+    image: nginx:latest
+    ports:
+      - name: http
+        containerPort: 80
