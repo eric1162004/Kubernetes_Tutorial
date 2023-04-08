@@ -3,8 +3,6 @@ kind: Pod
 metadata:
   labels:
     app: nginx
-    env: test
-    user: nginx
   annotations:
     scrape: "true"
   name: nginx

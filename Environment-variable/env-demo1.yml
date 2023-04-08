@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: env-demo
+spec:
+  containers:
+  # - command: ["printenv"]
+  #   args: ["APP_NAME"]
+  - name: alpine
+    image: alpine
+    command: 
+    - /bin/sh
+    - -c
+    - | # | mean to new lines for every statement; if you use '>', it means all in one line
+      echo "$APP_NAME"
+      echo "$POD_NAME"
+      echo "$CPU_REQUEST"
+      echo "$CPU_LIMIT"
+    env:
+    - name: APP_NAME
+      value: "my app"
+    - name: POD_NAME
+      valueFrom:
+        fieldRef: # Using Pod information as values for EV
+          fieldPath: metadata.name
+    - name: CPU_REQUEST
+      valueFrom:
+        resourceFieldRef: # Using Container fields as values for EV
+          containerName: alpine
+          resource: requests.cpu
+    - name: CPU_LIMIT
+      valueFrom:
+        resourceFieldRef: 
+          containerName: alpine
+          resource: limits.cpu
+  restartPolicy: Never
+
