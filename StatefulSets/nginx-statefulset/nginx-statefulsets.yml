@@ -1,0 +1,74 @@
+# https://kubernetes.io/docs/tutorials/stateful-application/basic-stateful-set/
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-headless
+  labels:
+    app: nginx
+spec:
+  ports:
+  - port: 80
+    name: web
+  clusterIP: None # headless service
+  selector:
+    app: nginx
+---
+# technically you don't need this ClusterIP service.. it is for demo purpose
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-normal
+  labels:
+    app: nginx
+spec:
+  ports:
+  - port: 80
+    name: web
+  selector:
+    app: nginx
+---    
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: web
+spec:
+  serviceName: "nginx-headless" # you need to specify the headless service that this statefulset will attach to
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      volumes: # emptyDir Volume for caching
+      - name: shared-volume
+        emptyDir: {}
+      initContainers:
+      - name: busybox
+        image: busybox
+        volumeMounts:
+        - name: shared-volume
+          mountPath: /nginx-data
+        command: ["/bin/sh", "-c"]
+        args: ["echo Hello from container $HOSTNAME > /nginx-data/index.html"]
+      containers:
+      - name: nginx
+        image: k8s.gcr.io/nginx-slim:0.8
+        ports:
+        - containerPort: 80
+          name: web
+        volumeMounts:
+        - name: shared-volume # mount emptyDir here
+          mountPath: /usr/share/nginx/html
+        - name: www # mount PVC here
+          mountPath: /usr/share/nginx
+  volumeClaimTemplates: # create PVC.. number of PVC created depends of the number of replica
+  - metadata:
+      name: www
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 10Mi
