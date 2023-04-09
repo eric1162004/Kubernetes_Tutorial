@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cpu-demo
+spec:
+  containers:
+  - name: cpu-demo-ctr
+    image: vish/stress
+    resources:
+      requests:
+        cpu: "0.5"
+      limits:
+        cpu: "1"
+    args: ["-cpus", "2"] # the container will use 2 cpu. the pod will be throttle since it exceed cpu limit
