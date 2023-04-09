@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nginx
+  name: nginx
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      name: nginx
+      labels:
+        app: nginx  
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+      tolerations:
+
+      # CASE 1: will match as long as taint has a key = env and effect = NoSchedule
+      - key: "env"
+        operator: "exist" 
+        effect: "NoSchedule"
+        # tolerationSeconds: 20 # tolarate only 20 seconds
+
+      # CASE 2: will match as long as taint has a key = env 
+      - key: "env"
+        operator: "exist" 
+
+      # CASE 3:will always match 
+      - operator: "exist" 
+    

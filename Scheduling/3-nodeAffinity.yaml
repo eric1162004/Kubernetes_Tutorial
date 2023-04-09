@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: node-affinity
+spec:
+  containers:
+  - image: nginx
+    name: nginx
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution: # (hard requirement)
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: gpu
+            operator: In # In, NotIn, Exists, DoesNotExist, Gt, Lt
+            values:
+            - amd
+            - intel
+      preferredDuringSchedulingIgnoredDuringExecution: # (soft requirement)
+        - weight: 10 # value from 1-100, higher = more preferred
+          preference:
+            matchExpressions:
+              - key: disk
+                operator: In
+                values: 
+                - ssd
+        - weight: 1
+          preference:
+            matchExpressions:
+            - key: disk
+              operator: In
+              values: 
+              - hdd
+
+
+        
+    
