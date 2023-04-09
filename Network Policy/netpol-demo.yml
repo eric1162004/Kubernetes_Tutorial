@@ -1,0 +1,41 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-ingress-nginx
+  namespace: default
+spec:
+  podSelector:
+    matchLabels:
+      role: db
+  policyTypes: 
+    - Ingress
+    - Egress
+  ingress: # once you apply a ingress rule, everything by default is blocked
+  - from:
+    - ipBlock:
+        cidr: 172.17.0.0/16 # allow this ip block
+        except: 
+        - 172.17.1.0/24 # block this ip block
+    - namespaceSelector:
+        matchLabels:
+          project: myproject # allow this ns
+    - podSelector: 
+        matchLabels:
+          role: frontend # allow this pods
+    - namespaceSelector: # allow this pods from this ns (note the absence of '-')
+        matchLabels:
+          project: myproject2 
+      podSelector: 
+        matchLabels:
+          role: backend
+    ports:
+      - protocol: TCP
+        port: 6379
+  egress: # allow egress to dns for name resolution
+  - to:
+    - namespaceSelector:
+        matchLabels: 
+          kubernetes.io/metadata.name: kube-system
+    ports:
+    - protocol: UDP
+      port: 53
