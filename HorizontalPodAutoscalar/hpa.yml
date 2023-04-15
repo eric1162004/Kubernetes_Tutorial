@@ -1,0 +1,54 @@
+apiVersion: v1
+items:
+- apiVersion: autoscaling/v2
+  kind: HorizontalPodAutoscaler
+  metadata:
+    name: php-apache
+    namespace: default
+    resourceVersion: "14789"
+    uid: f81e5c9a-ad44-44a2-977f-8873a60ca827
+  spec:
+    minReplicas: 1
+    maxReplicas: 10
+    metrics:
+    - resource:
+        name: cpu
+        target:
+          averageUtilization: 50
+          type: Utilization
+      type: Resource
+    scaleTargetRef: # targeting to this deployment object
+      apiVersion: apps/v1
+      kind: Deployment
+      name: php-apache
+  status:
+    conditions:
+    - lastTransitionTime: "2023-04-15T21:53:52Z"
+      message: recent recommendations were higher than current one, applying the highest
+        recent recommendation
+      reason: ScaleDownStabilized
+      status: "True"
+      type: AbleToScale
+    - lastTransitionTime: "2023-04-15T21:54:07Z"
+      message: the HPA was able to successfully calculate a replica count from cpu
+        resource utilization (percentage of request)
+      reason: ValidMetricFound
+      status: "True"
+      type: ScalingActive
+    - lastTransitionTime: "2023-04-15T21:54:07Z"
+      message: the desired count is within the acceptable range
+      reason: DesiredWithinRange
+      status: "False"
+      type: ScalingLimited
+    currentMetrics:
+    - resource:
+        current:
+          averageUtilization: 0
+          averageValue: 1m
+        name: cpu
+      type: Resource
+    currentReplicas: 1
+    desiredReplicas: 1
+kind: List
+metadata:
+  resourceVersion: ""
