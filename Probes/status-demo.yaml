@@ -1,0 +1,131 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"v1","kind":"Pod","metadata":{"annotations":{},"name":"multi-container-pod","namespace":"default"},"spec":{"containers":[{"args":["-c","while true; do echo c1; sleep 5; done"],"command":["/bin/sh"],"image":"ubuntu","name":"c1"},{"args":["-c","while true; do echo c2; sleep 5; done"],"command":["/bin/sh"],"image":"ubuntu","name":"c2"}]}}
+  creationTimestamp: "2023-04-15T17:00:47Z"
+  name: multi-container-pod
+  namespace: default
+  resourceVersion: "535"
+  uid: 6ae9063c-8f47-42bf-85b4-d86645e3d09f
+spec:
+  containers:
+  - args:
+    - -c
+    - while true; do echo c1; sleep 5; done
+    command:
+    - /bin/sh
+    image: ubuntu
+    imagePullPolicy: Always
+    name: c1
+    resources: {}
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-ss4m5
+      readOnly: true
+  - args:
+    - -c
+    - while true; do echo c2; sleep 5; done
+    command:
+    - /bin/sh
+    image: ubuntu
+    imagePullPolicy: Always
+    name: c2
+    resources: {}
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-ss4m5
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  nodeName: minikube
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: default
+  serviceAccountName: default
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  volumes:
+  - name: kube-api-access-ss4m5
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2023-04-15T17:00:47Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2023-04-15T17:00:57Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2023-04-15T17:00:57Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2023-04-15T17:00:47Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: docker://1ebc3cb7c84effed43d7c18fea971933c7ba3cb0266a3af59f9e266fbfe2b992
+    image: ubuntu:latest
+    imageID: docker-pullable://ubuntu@sha256:67211c14fa74f070d27cc59d69a7fa9aeff8e28ea118ef3babc295a0428a6d21
+    lastState: {}
+    name: c1
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2023-04-15T17:00:55Z"
+  - containerID: docker://f589aaddce1a0c8f0d958856fe74da8c58cac97389bf59b306a378e33b63114d
+    image: ubuntu:latest
+    imageID: docker-pullable://ubuntu@sha256:67211c14fa74f070d27cc59d69a7fa9aeff8e28ea118ef3babc295a0428a6d21
+    lastState: {}
+    name: c2
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2023-04-15T17:00:56Z"
+  hostIP: 192.168.49.2
+  phase: Running # this property will be changed based on probe results
+  # Pending, Running, Succeeded, Failed, Unknown
+  podIP: 10.244.0.4
+  podIPs:
+  - ip: 10.244.0.4
+  qosClass: BestEffort
+  startTime: "2023-04-15T17:00:47Z"
