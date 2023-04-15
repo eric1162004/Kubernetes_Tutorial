@@ -1,0 +1,20 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: counter-job
+spec:
+  activeDeadlineSeconds: 20 # terminate the job if it takes longer than the specific duration
+  backoffLimit: 2 # can only restart 2 times
+  completions: 4 # complete 4 times; pod is created one after another
+  parallelism: 4 # start 2 pods at a time
+  ttlSecondsAfterFinished: 30 # delete job after completion after 30 secs
+
+  template:
+    spec:
+      containers:
+      - name: counter-job
+        image: busybox
+        command: [ "/bin/sh", "-c" ]
+        args: ["for num in 10 9 8 7 6 5 4 3 2 1; do echo $num; sleep 1; done"]
+      restartPolicy: Never # note that even restart policy is set to Never, if a job fails, a new pod will be created until the job is completed
