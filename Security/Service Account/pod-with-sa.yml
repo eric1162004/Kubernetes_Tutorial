@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: build-robot
+# automountServiceAccountToken: false  # will not automatically mount service account token onto the pod that binds to this ServiceAccount
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+  labels:
+    app: nginx
+spec:
+  serviceAccountName: build-robot # attach the SA
+  # automountServiceAccountToken: false # disable auto mount SA token
+  containers:
+  - image: nginx
+    name: nginx
+    ports:
+    - containerPort: 80
